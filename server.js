@@ -15,7 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect('mongodb+srv://evana:MTWoi4X5dAdOMCGN@evana.pqgeiri.mongodb.net/clozer?retryWrites=true&w=majority&appName=evana')
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB error:', err));
 
@@ -31,7 +31,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: process.env.MONGODB_URI
+    mongoUrl: 'mongodb+srv://evana:MTWoi4X5dAdOMCGN@evana.pqgeiri.mongodb.net/clozer?retryWrites=true&w=majority&appName=evana'
   }),
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 } // 7 days
 }));
