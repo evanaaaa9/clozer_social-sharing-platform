@@ -10,6 +10,7 @@ const authRoutes = require('./routes/auth');
 const circleRoutes = require('./routes/circles');
 const postRoutes = require('./routes/posts');
 const dashboardRoutes = require('./routes/dashboard');
+const profileRoutes = require('./routes/profile');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -51,6 +52,7 @@ app.use('/', authRoutes);
 app.use('/circles', circleRoutes);
 app.use('/posts', postRoutes);
 app.use('/dashboard', dashboardRoutes);
+app.use('/profile', profileRoutes);
 
 // Landing page
 app.get('/', (req, res) => {
