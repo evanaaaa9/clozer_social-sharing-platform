@@ -25,13 +25,11 @@ router.post('/:id/members', requireAuth, async (req, res) => {
   try {
     const circle = await Circle.findOne({ _id: req.params.id, owner: req.session.user._id });
     if (!circle) return res.status(404).json({ error: 'Circle not found' });
-
     const { email } = req.body;
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ error: 'User not found' });
     if (circle.members.includes(user._id))
       return res.status(400).json({ error: 'Already a member' });
-
     circle.members.push(user._id);
     await circle.save();
     res.json({ success: true, member: { _id: user._id, name: user.name, email: user.email } });

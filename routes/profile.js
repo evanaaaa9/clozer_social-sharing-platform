@@ -1,13 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
 const { requireAuth } = require('../middleware/auth');
 const User = require('../models/User');
 const Post = require('../models/Post');
-
-router.get('/', requireAuth, (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/profile.html'));
-});
 
 router.get('/me', requireAuth, async (req, res) => {
   try {
@@ -18,7 +13,7 @@ router.get('/me', requireAuth, async (req, res) => {
   }
 });
 
-router.get('/myposts', requireAuth, async (req, res) => {
+router.get('/ A', requireAuth, async (req, res) => {
   try {
     const posts = await Post.find({ author: req.session.user._id })
       .populate('circles', 'name color')

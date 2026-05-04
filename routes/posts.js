@@ -35,7 +35,6 @@ router.post('/', requireAuth, async (req, res) => {
     if (!content) return res.status(400).json({ error: 'Content is required' });
     if (!circles || !circles.length)
       return res.status(400).json({ error: 'Select at least one circle' });
-
     const post = new Post({ content, circles, author: req.session.user._id });
     await post.save();
     await post.populate('author', 'name email');

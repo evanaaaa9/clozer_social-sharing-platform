@@ -1,17 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
 const User = require('../models/User');
-
-router.get('/login', (req, res) => {
-  if (req.session.user) return res.redirect('/dashboard');
-  res.sendFile(path.join(__dirname, '../public/login.html'));
-});
-
-router.get('/register', (req, res) => {
-  if (req.session.user) return res.redirect('/dashboard');
-  res.sendFile(path.join(__dirname, '../public/register.html'));
-});
 
 router.post('/register', async (req, res) => {
   try {
@@ -27,7 +16,7 @@ router.post('/register', async (req, res) => {
     await user.save();
 
     req.session.user = { _id: user._id, name: user.name, email: user.email };
-    res.json({ success: true, redirect: '/dashboard' });
+    res.json({ success: true, user: req.session.user });
   } catch (err) {
     res.status(500).json({ error: 'Registration failed' });
   }
@@ -41,14 +30,19 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password' });
 
     req.session.user = { _id: user._id, name: user.name, email: user.email };
-    res.json({ success: true, redirect: '/dashboard' });
+    res.json({ success: true, user: req.session.user });
   } catch (err) {
     res.status(500).json({ error: 'Login failed' });
   }
 });
 
-router.get('/logout', (req, res) => {
-  req.session.destroy(() => res.redirect('/'));
+router.post('/logout', (req, res) => {
+  req.session.destroy(() => res.json({ success: true }));
+});
+
+router.get('/me', (req, res) => {
+  if (!req.session.user) return res.status(401).json({ error: 'Not logged in' });
+  res.json(req.session.user);
 });
 
 module.exports = router;
