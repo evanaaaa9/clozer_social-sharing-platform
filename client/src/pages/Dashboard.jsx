@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { useTheme } from '../context/ThemeContext'
 
 const COLORS = ['#2a7c5a', '#5b4fd8', '#d85b5b', '#c47d1a', '#1a7fb5', '#a854a8']
 
@@ -41,6 +42,7 @@ export default function Dashboard() {
     const [activeCircle, setActiveCircle] = useState(null)
     const [openComments, setOpenComments] = useState({})
     const [commentTexts, setCommentTexts] = useState({})
+    const { dark, toggleTheme } = useTheme()
 
     useEffect(() => { loadCircles() }, [])
     useEffect(() => { loadFeed() }, [selectedCircle])
@@ -122,19 +124,19 @@ export default function Dashboard() {
     }
 
     const s = {
-        page: { background: '#f4f3f0', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif" },
-        nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid #e8e6e1', background: '#fafafa', position: 'sticky', top: 0, zIndex: 100 },
-        logo: { fontFamily: "'DM Serif Display', serif", fontSize: '1.4rem', color: '#0f0f0f', textDecoration: 'none' },
+        page: { background: 'var(--bg)', minHeight: '100vh', fontFamily: "'DM Sans', sans-serif", color: 'var(--text)' },
+        nav: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 2rem', borderBottom: '1px solid var(--border)', background: 'var(--bg-card)', position: 'sticky', top: 0, zIndex: 100 },
+        logo: { fontFamily: "'DM Serif Display', serif", fontSize: '1.4rem', color: 'var(--text)', textDecoration: 'none' },
         layout: { display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: 'calc(100vh - 65px)' },
-        sidebar: { background: '#fafafa', borderRight: '1px solid #e8e6e1', padding: '1.5rem' },
+        sidebar: { background: 'var(--bg-card)', borderRight: '1px solid var(--border)', padding: '1.5rem' },
         feed: { padding: '2rem', maxWidth: '680px' },
-        card: { background: '#fafafa', border: '1px solid #e8e6e1', borderRadius: '16px', padding: '1.25rem 1.5rem', marginBottom: '1rem' },
-        btn: { padding: '0.5rem 1.2rem', border: '1px solid #e8e6e1', borderRadius: '99px', background: 'none', fontSize: '0.88rem', fontFamily: "'DM Sans', sans-serif", color: '#5c5a55', cursor: 'pointer' },
-        btnPrimary: { padding: '0.5rem 1.4rem', border: 'none', borderRadius: '99px', background: '#0f0f0f', color: '#fafafa', fontSize: '0.88rem', fontFamily: "'DM Sans', sans-serif", fontWeight: 500, cursor: 'pointer' },
-        pill: (active) => ({ padding: '0.35rem 1rem', borderRadius: '99px', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer', border: active ? 'none' : '1px solid #e8e6e1', background: active ? '#0f0f0f' : '#fafafa', color: active ? '#fafafa' : '#5c5a55', fontFamily: "'DM Sans', sans-serif' " }),
-        overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 },
-        modal: { background: '#fafafa', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem', maxHeight: '90vh', overflowY: 'auto' },
-        input: { padding: '0.7rem 1rem', border: '1px solid #e8e6e1', borderRadius: '10px', fontSize: '0.95rem', fontFamily: "'DM Sans', sans-serif", outline: 'none', width: '100%' },
+        card: { background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem 1.5rem', marginBottom: '1rem' },
+        btn: { padding: '0.5rem 1.2rem', border: '1px solid var(--border)', borderRadius: '99px', background: 'none', fontSize: '0.88rem', fontFamily: "'DM Sans', sans-serif", color: 'var(--text-muted)', cursor: 'pointer' },
+        btnPrimary: { padding: '0.5rem 1.4rem', border: 'none', borderRadius: '99px', background: 'var(--accent)', color: '#fff', fontSize: '0.88rem', fontFamily: "'DM Sans', sans-serif", fontWeight: 500, cursor: 'pointer' },
+        pill: (active) => ({ padding: '0.35rem 1rem', borderRadius: '99px', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer', border: active ? 'none' : '1px solid var(--border)', background: active ? 'var(--accent)' : 'var(--bg-card)', color: active ? '#fff' : 'var(--text-muted)', fontFamily: "'DM Sans', sans-serif" }),
+        overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 },
+        modal: { background: 'var(--bg-card)', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem', maxHeight: '90vh', overflowY: 'auto', border: '1px solid var(--border)' },
+        input: { padding: '0.7rem 1rem', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: "'DM Sans', sans-serif", outline: 'none', width: '100%', background: 'var(--bg)', color: 'var(--text)' },
     }
 
     return (
@@ -145,6 +147,9 @@ export default function Dashboard() {
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
                     <span style={{ fontSize: '0.88rem', color: '#5c5a55' }}>Hi, {user?.name}!</span>
                     <button style={s.btn} onClick={() => navigate('/profile')}>My Profile</button>
+                    <button onClick={toggleTheme} style={{ ...s.btn, fontSize: '1.2rem', padding: '0.5rem 1rem' }}>
+                        {dark ? '☀️' : '🌙'}
+                    </button>
                     <button style={s.btn} onClick={handleLogout}>Log out</button>
                 </div>
             </nav>
