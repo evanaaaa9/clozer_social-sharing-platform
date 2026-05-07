@@ -119,6 +119,7 @@ export default function Dashboard() {
         loadCircles()
         loadFeed()
     }
+
     async function handleEditPost(post) {
         setEditingPost(post._id)
         setEditContent(post.content)
@@ -159,7 +160,6 @@ export default function Dashboard() {
 
     return (
         <div style={s.page}>
-            {/* NAV */}
             <nav style={s.nav}>
                 <span style={s.logo}>Cloze<span style={{ color: '#2a7c5a' }}>r</span></span>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
@@ -173,20 +173,18 @@ export default function Dashboard() {
             </nav>
 
             <div style={s.layout}>
-                {/* SIDEBAR */}
                 <aside style={s.sidebar}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', fontSize: '0.78rem', fontWeight: 500, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)' }}>
                         <span>My Circles</span>
-                        <button onClick={() => setShowCircleModal(true)} style={{ background: 'none', border: '1px solid #e8e6e1', borderRadius: '6px', width: 24, height: 24, cursor: 'pointer', fontSize: '1rem', color: 'var(--text-muted)' }}>+</button>
+                        <button onClick={() => setShowCircleModal(true)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '6px', width: 24, height: 24, cursor: 'pointer', fontSize: '1rem', color: 'var(--text-muted)' }}>+</button>
                     </div>
-
                     <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                        <li onClick={() => setSelectedCircle('all')} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', borderRadius: '8px', fontSize: '0.88rem', cursor: 'pointer', background: selectedCircle === 'all' ? '#e4f0ea' : 'none', color: selectedCircle === 'all' ? '#2a7c5a' : 'var(--text-muted)' }}>
+                        <li onClick={() => setSelectedCircle('all')} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.55rem 0.75rem', borderRadius: '8px', fontSize: '0.88rem', cursor: 'pointer', background: selectedCircle === 'all' ? 'var(--bg)' : 'none', color: selectedCircle === 'all' ? 'var(--accent)' : 'var(--text-muted)' }}>
                             <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#888', flexShrink: 0 }}></span>
                             All circles
                         </li>
                         {circles.map(c => (
-                            <li key={c._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.55rem 0.75rem', borderRadius: '8px', fontSize: '0.88rem', cursor: 'pointer', background: selectedCircle === c._id ? '#e4f0ea' : 'none', color: selectedCircle === c._id ? '#2a7c5a' : 'var(--text-muted)' }}>
+                            <li key={c._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.55rem 0.75rem', borderRadius: '8px', fontSize: '0.88rem', cursor: 'pointer', background: selectedCircle === c._id ? 'var(--bg)' : 'none', color: selectedCircle === c._id ? 'var(--accent)' : 'var(--text-muted)' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }} onClick={() => setSelectedCircle(c._id)}>
                                     <span style={{ width: 8, height: 8, borderRadius: '50%', background: c.color, flexShrink: 0 }}></span>
                                     {c.name}
@@ -197,18 +195,16 @@ export default function Dashboard() {
                     </ul>
                 </aside>
 
-                {/* MAIN FEED */}
                 <main style={s.feed}>
-                    {/* Compose */}
                     <div style={s.card}>
                         <textarea value={postContent} onChange={e => setPostContent(e.target.value)} placeholder="What's on your mind?" maxLength={1000}
-                            style={{ width: '100%', border: 'none', outline: 'none', fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', resize: 'none', minHeight: '80px', background: 'transparent' }} />
-                        <div style={{ borderTop: '1px solid #e8e6e1', paddingTop: '1rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '1rem' }}>
+                            style={{ width: '100%', border: 'none', outline: 'none', fontFamily: "'DM Sans', sans-serif", fontSize: '0.95rem', resize: 'none', minHeight: '80px', background: 'transparent', color: 'var(--text)' }} />
+                        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', marginTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: '1rem' }}>
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 500, marginBottom: '0.5rem' }}>Share to:</div>
                                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
                                     {circles.map(c => (
-                                        <label key={c._id} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', cursor: 'pointer', padding: '0.3rem 0.7rem', border: selectedCirclesForPost.includes(c._id) ? `1px solid ${c.color}` : '1px solid #e8e6e1', borderRadius: '99px', color: selectedCirclesForPost.includes(c._id) ? c.color : 'var(--text-muted)', background: selectedCirclesForPost.includes(c._id) ? `${c.color}15` : 'none' }}>
+                                        <label key={c._id} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', cursor: 'pointer', padding: '0.3rem 0.7rem', border: selectedCirclesForPost.includes(c._id) ? `1px solid ${c.color}` : '1px solid var(--border)', borderRadius: '99px', color: selectedCirclesForPost.includes(c._id) ? c.color : 'var(--text-muted)', background: selectedCirclesForPost.includes(c._id) ? `${c.color}15` : 'none' }}>
                                             <input type="checkbox" style={{ display: 'none' }} checked={selectedCirclesForPost.includes(c._id)}
                                                 onChange={e => setSelectedCirclesForPost(prev => e.target.checked ? [...prev, c._id] : prev.filter(id => id !== c._id))} />
                                             <span style={{ width: 7, height: 7, borderRadius: '50%', background: c.color }}></span>
@@ -220,22 +216,6 @@ export default function Dashboard() {
                             <button onClick={handlePost} style={s.btnPrimary}>Post</button>
                         </div>
                     </div>
-
-                    {/* Filter pills */}
-                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
-                        <button style={s.pill(selectedCircle === 'all')} onClick={() => setSelectedCircle('all')}>All circles</button>
-                        {circles.map(c => (
-                            <button key={c._id} style={s.pill(selectedCircle === c._id)} onClick={() => setSelectedCircle(c._id)}>{c.name}</button>
-                        ))}
-                    </div>
-
-                    {/* Posts */}
-                    {posts.length === 0 && (
-                        <div style={{ textAlign: 'center', padding: '4rem 2rem', color: 'var(--text-muted)' }}>
-                            <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Nothing here yet</h3>
-                            <p>Create a circle and post something!</p>
-                        </div>
-                    )}
 
                     {posts.map(post => (
                         <div key={post._id} style={s.card}>
@@ -253,8 +233,8 @@ export default function Dashboard() {
                                 </div>
                                 <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'right' }}>
                                     <div>{timeAgo(post.createdAt)}</div>
-                                    {post.isEdited && (
-                                        <div style={{ fontSize: '0.72rem' }}>(edited {timeAgo(post.editedAt)})</div>
+                                    {post.updatedAt !== post.createdAt && (
+                                        <div style={{ fontSize: '0.72rem', fontStyle: 'italic' }}>edited {timeAgo(post.updatedAt)}</div>
                                     )}
                                 </div>
                             </div>
@@ -262,68 +242,77 @@ export default function Dashboard() {
                             {editingPost === post._id ? (
                                 <div>
                                     <textarea value={editContent} onChange={e => setEditContent(e.target.value)}
-                                        style={{ width: '100%', border: '1px solid var(--border)', borderRadius: '10px', padding: '0.7rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.92rem', minHeight: '80px', background: 'var(--bg)', color: 'var(--text)' }} />
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                                        <button onClick={() => handleSaveEdit(post._id)} style={{ ...s.btnPrimary, padding: '0.4rem 1rem', fontSize: '0.82rem' }}>Save</button>
-                                        <button onClick={() => setEditingPost(null)} style={{ ...s.btn, padding: '0.4rem 1rem', fontSize: '0.82rem' }}>Cancel</button>
+                                        style={{ ...s.input, minHeight: '80px', marginBottom: '0.5rem' }} />
+                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                        <button onClick={() => handleSaveEdit(post._id)} style={s.btnPrimary}>Save</button>
+                                        <button onClick={() => setEditingPost(null)} style={s.btn}>Cancel</button>
                                     </div>
                                 </div>
                             ) : (
-                                <div style={{ fontSize: '0.92rem', color: 'var(--text-muted)', lineHeight: 1.65, fontWeight: 300, marginBottom: '1rem' }}>{post.content}</div>
+                                <div style={{ fontSize: '0.92rem', lineHeight: 1.65, marginBottom: '1rem' }}>{post.content}</div>
                             )}
 
                             <div style={{ display: 'flex', gap: '1.5rem' }}>
-                                {post.author._id === user?._id && editingPost !== post._id && (
-                                    <>
-                                        <button onClick={() => handleEditPost(post)} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                                            ✏️ Edit
-                                        </button>
-                                        <button onClick={() => handleDeletePost(post._id)} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: '#c44b4b', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
-                                            🗑️ Delete
-                                        </button>
-                                    </>
-                                )}
-                                <button onClick={() => handleLike(post._id)} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                                <button onClick={() => handleLike(post._id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                                     ♥ {post.likes.length}
                                 </button>
-                                <button onClick={() => setOpenComments(prev => ({ ...prev, [post._id]: !prev[post._id] }))} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
+                                <button onClick={() => setOpenComments(prev => ({ ...prev, [post._id]: !prev[post._id] }))} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>
                                     💬 {post.comments.length}
                                 </button>
+                                {post.author._id === user?._id && (
+                                    <>
+                                        <button onClick={() => handleEditPost(post)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}>✏️ Edit</button>
+                                        <button onClick={() => handleDeletePost(post._id)} style={{ background: 'none', border: 'none', color: '#d85b5b', cursor: 'pointer' }}>🗑️ Delete</button>
+                                    </>
+                                )}
                             </div>
-
-                            {openComments[post._id] && (
-                                <div style={{ marginTop: '1rem', borderTop: '1px solid #e8e6e1', paddingTop: '0.85rem' }}>
-                                    {post.comments.map((c, i) => (
-                                        <div key={i} style={{ fontSize: '0.85rem', marginBottom: '0.5rem' }}>
-                                            <strong>{c.author?.name}</strong>: {c.text}
-                                        </div>
-                                    ))}
-                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
-                                        <input value={commentTexts[post._id] || ''} onChange={e => setCommentTexts(prev => ({ ...prev, [post._id]: e.target.value }))}
-                                            placeholder="Add a comment..." style={{ flex: 1, border: '1px solid #e8e6e1', borderRadius: '99px', padding: '0.4rem 0.9rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.85rem', outline: 'none' }} />
-                                        <button onClick={() => handleComment(post._id)} style={{ background: '#2a7c5a', color: '#fff', border: 'none', borderRadius: '99px', padding: '0.4rem 0.9rem', fontSize: '0.82rem', fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>Send</button>
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     ))}
                 </main>
             </div>
 
-            {/* NEW CIRCLE MODAL */}
             {showCircleModal && (
-                <div style={s.overlay} onClick={e => e.target === e.currentTarget && setShowCircleModal(false)}>
-                    <div style={s.modal}>
+                <div style={s.overlay} onClick={() => setShowCircleModal(false)}>
+                    <div style={s.modal} onClick={e => e.stopPropagation()}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <h3 style={{ fontSize: '1.1rem', fontWeight: 500 }}>New circle</h3>
-                            <button onClick={() => setShowCircleModal(false)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer' }}>✕</button>
+                            <button onClick={() => setShowCircleModal(false)} style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer' }}>✕</button>
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                            <label style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}>Circle name</label>
-                            <input value={circleName} onChange={e => setCircleName(e.target.value)} placeholder="e.g. Close Friends" style={s.input} />
+                        <input value={circleName} onChange={e => setCircleName(e.target.value)} placeholder="Circle name" style={s.input} />
+                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                            {COLORS.map(color => (
+                                <div key={color} onClick={() => setCircleColor(color)} style={{ width: 28, height: 28, borderRadius: '50%', background: color, cursor: 'pointer', border: circleColor === color ? '2px solid var(--text)' : '2px solid transparent', transform: circleColor === color ? 'scale(1.1)' : 'scale(1)', transition: '0.2s' }} />
+                            ))}
                         </div>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-                            <label style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-muted)' }}>Color</label>
-                            <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                {COLORS.map(color => (
-                                    <div key={color} onClick={() => setCircleColor(color)} style={{ width: 28, height: 28, borderRadius: '50%', background: color, cursor: 'pointer', border: circleColor === color ? '2px solid #0f0f0f' : '2px solid transparent', transform: circleColor === color ? 'scale(1.15)' : 'scale(1)', transition: '0
+                        <button onClick={handleCreateCircle} style={s.btnPrimary}>Create Circle</button>
+                    </div>
+                </div>
+            )}
+
+            {showMemberModal && activeCircle && (
+                <div style={s.overlay} onClick={() => setShowMemberModal(false)}>
+                    <div style={s.modal} onClick={e => e.stopPropagation()}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <h3 style={{ fontSize: '1.1rem' }}>Manage {activeCircle.name}</h3>
+                            <button onClick={() => setShowMemberModal(false)} style={{ background: 'none', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '50%', width: 30, height: 30, cursor: 'pointer' }}>✕</button>
+                        </div>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <input value={memberEmail} onChange={e => setMemberEmail(e.target.value)} placeholder="Friend's email" style={s.input} />
+                            <button onClick={handleAddMember} style={s.btnPrimary}>Add</button>
+                        </div>
+                        {memberError && <p style={{ color: '#d85b5b', fontSize: '0.8rem' }}>{memberError}</p>}
+                        <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                            {activeCircle.members.map(m => (
+                                <div key={m._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.5rem 0', borderBottom: '1px solid var(--border)' }}>
+                                    <span style={{ fontSize: '0.9rem' }}>{m.name}</span>
+                                    <button onClick={() => handleRemoveMember(m._id)} style={{ background: 'none', border: 'none', color: '#d85b5b', cursor: 'pointer', fontSize: '0.8rem' }}>Remove</button>
+                                </div>
+                            ))}
+                        </div>
+                        <button onClick={handleDeleteCircle} style={{ ...s.btn, color: '#d85b5b', borderColor: '#d85b5b', marginTop: '1rem' }}>Delete Circle</button>
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
