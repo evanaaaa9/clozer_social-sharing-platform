@@ -4,6 +4,7 @@ const { requireAuth } = require('../middleware/auth');
 const Post = require('../models/Post');
 const Circle = require('../models/Circle');
 
+// GET FEED - Only shows whispers that haven't expired
 router.get('/feed', requireAuth, async (req, res) => {
   try {
     const userId = req.session.user._id;
@@ -14,12 +15,13 @@ router.get('/feed', requireAuth, async (req, res) => {
     const { circle } = req.query;
     const filter = {
       circles: circle ? circle : { $in: allCircleIds },
-      expiresAt: { $gt: new Date() } // ONLY SHOW LIVING WHISPERS
+      expiresAt: { $gt: new Date() } // Double check they haven't expired
     };
 
     const posts = await Post.find(filter)
       .populate('author', 'name email')
       .populate('circles', 'name color')
+      .populate('comments.author', 'name')
       .sort({ createdAt: -1 });
 
     res.json(posts);
@@ -28,88 +30,55 @@ router.get('/feed', requireAuth, async (req, res) => {
   }
 });
 
+// CREATE WHISPER
 router.post('/', requireAuth, async (req, res) => {
   try {
     const { content, circles } = req.body;
     if (!content) return res.status(400).json({ error: 'Content is required' });
-    if (!circles || !circles.length)
-      return res.status(400).json({ error: 'Select at least one circle' });
-    const post = new Post({ content, circles, author: req.session.user._id });
+    if (!circles || !circles.length) return res.status(400).json({ error: 'Select a circle' });
+
+    const post = new Post({
+      content,
+      circles,
+      author: req.session.user._id
+    });
+
     await post.save();
     await post.populate('author', 'name email');
     await post.populate('circles', 'name color');
     res.json(post);
   } catch (err) {
-    res.status(500).json({ error: 'Could not create post' });
+    res.status(500).json({ error: 'Could not create whisper' });
   }
 });
 
+// LIKE WHISPER
 router.post('/:id/like', requireAuth, async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
+    if (!post) return res.status(404).json({ error: 'Whisper vanished!' });
+
     const userId = req.session.user._id.toString();
     const liked = post.likes.map(l => l.toString()).includes(userId);
+
     if (liked) post.likes = post.likes.filter(l => l.toString() !== userId);
     else post.likes.push(req.session.user._id);
+
     await post.save();
     res.json({ likes: post.likes.length, liked: !liked });
   } catch (err) {
-    res.status(500).json({ error: 'Could not like post' });
+    res.status(500).json({ error: 'Could not like' });
   }
 });
 
-router.post('/:id/comments', requireAuth, async (req, res) => {
-  try {
-    const { text } = req.body;
-    if (!text) return res.status(400).json({ error: 'Comment text required' });
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    post.comments.push({ author: req.session.user._id, text });
-    await post.save();
-    const comment = post.comments[post.comments.length - 1];
-    res.json({ ...comment.toObject(), author: { name: req.session.user.name } });
-  } catch (err) {
-    res.status(500).json({ error: 'Could not add comment' });
-  }
-});
-
+// DELETE WHISPER
 router.delete('/:id', requireAuth, async (req, res) => {
   try {
     await Post.findOneAndDelete({ _id: req.params.id, author: req.session.user._id });
     res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ error: 'Could not delete post' });
+    res.status(500).json({ error: 'Could not delete' });
   }
 });
-
-router.put('/:id', requireAuth, async (req, res) => {
-  try {
-    const { content } = req.body;
-    const post = await Post.findOne({ _id: req.params.id, author: req.session.user._id });
-    if (!post) return res.status(404).json({ error: 'Post not found' });
-    post.content = content;
-    await post.save();
-    res.json({ success: true, post });
-  } catch (err) {
-    res.status(500).json({ error: 'Could not update post' });
-  }
-});
-
-const postSchema = new mongoose.Schema({
-  content: String,
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  circles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Circle' }],
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  comments: [commentSchema],
-
-  createdAt: { type: Date, default: Date.now },
-
-  expiresAt: {
-    type: Date,
-    default: () => new Date(Date.now() + 10 * 60 * 1000), // 10 mins from now
-    index: { expires: 0 } // Tell MongoDB to delete when this time is reached
-  }
-}, { timestamps: true });
 
 module.exports = router;
