@@ -12,16 +12,15 @@ router.get('/feed', requireAuth, async (req, res) => {
     const allCircleIds = [...myCircles, ...memberCircles].map(c => c._id);
 
     const { circle } = req.query;
-    const filter = circle
-      ? { circles: circle }
-      : { circles: { $in: allCircleIds } };
+    const filter = {
+      circles: circle ? circle : { $in: allCircleIds },
+      expiresAt: { $gt: new Date() } // ONLY SHOW LIVING WHISPERS
+    };
 
     const posts = await Post.find(filter)
       .populate('author', 'name email')
       .populate('circles', 'name color')
-      .populate('comments.author', 'name')
-      .sort({ createdAt: -1 })
-      .limit(50);
+      .sort({ createdAt: -1 });
 
     res.json(posts);
   } catch (err) {
@@ -96,5 +95,21 @@ router.put('/:id', requireAuth, async (req, res) => {
     res.status(500).json({ error: 'Could not update post' });
   }
 });
+
+const postSchema = new mongoose.Schema({
+  content: String,
+  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  circles: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Circle' }],
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  comments: [commentSchema],
+
+  createdAt: { type: Date, default: Date.now },
+
+  expiresAt: {
+    type: Date,
+    default: () => new Date(Date.now() + 10 * 60 * 1000), // 10 mins from now
+    index: { expires: 0 } // Tell MongoDB to delete when this time is reached
+  }
+}, { timestamps: true });
 
 module.exports = router;
