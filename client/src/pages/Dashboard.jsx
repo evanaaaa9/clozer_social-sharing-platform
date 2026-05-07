@@ -26,6 +26,8 @@ function timeAgo(date) {
 }
 
 export default function Dashboard() {
+    const [editingPost, setEditingPost] = useState(null)
+    const [editContent, setEditContent] = useState('')
     const { user, logout } = useAuth()
     const navigate = useNavigate()
     const [circles, setCircles] = useState([])
@@ -118,6 +120,23 @@ export default function Dashboard() {
         loadFeed()
     }
 
+    async function handleEditPost(post) {
+        setEditingPost(post._id)
+        setEditContent(post.content)
+    }
+
+    async function handleSaveEdit(postId) {
+        await axios.put(`/api/posts/${postId}`, { content: editContent })
+        setEditingPost(null)
+        loadFeed()
+    }
+
+    async function handleDeletePost(postId) {
+        if (!window.confirm('Delete this post?')) return
+        await axios.delete(`/api/posts/${postId}`)
+        loadFeed()
+    }
+
     async function handleLogout() {
         await logout()
         navigate('/')
@@ -130,13 +149,14 @@ export default function Dashboard() {
         layout: { display: 'grid', gridTemplateColumns: '260px 1fr', minHeight: 'calc(100vh - 65px)' },
         sidebar: { background: 'var(--bg-card)', borderRight: '1px solid var(--border)', padding: '1.5rem' },
         feed: { padding: '2rem', maxWidth: '680px' },
-        card: { background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem 1.5rem', marginBottom: '1rem' },
+        card: { background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '16px', padding: '1.25rem 1.5rem', marginBottom: '1rem', color: 'var(--text)' },
         btn: { padding: '0.5rem 1.2rem', border: '1px solid var(--border)', borderRadius: '99px', background: 'none', fontSize: '0.88rem', fontFamily: "'DM Sans', sans-serif", color: 'var(--text-muted)', cursor: 'pointer' },
         btnPrimary: { padding: '0.5rem 1.4rem', border: 'none', borderRadius: '99px', background: 'var(--accent)', color: '#fff', fontSize: '0.88rem', fontFamily: "'DM Sans', sans-serif", fontWeight: 500, cursor: 'pointer' },
         pill: (active) => ({ padding: '0.35rem 1rem', borderRadius: '99px', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer', border: active ? 'none' : '1px solid var(--border)', background: active ? 'var(--accent)' : 'var(--bg-card)', color: active ? '#fff' : 'var(--text-muted)', fontFamily: "'DM Sans', sans-serif" }),
         overlay: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 200 },
         modal: { background: 'var(--bg-card)', borderRadius: '20px', padding: '2rem', width: '100%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '1.25rem', maxHeight: '90vh', overflowY: 'auto', border: '1px solid var(--border)' },
         input: { padding: '0.7rem 1rem', border: '1px solid var(--border)', borderRadius: '10px', fontSize: '0.95rem', fontFamily: "'DM Sans', sans-serif", outline: 'none', width: '100%', background: 'var(--bg)', color: 'var(--text)' },
+        editTextarea: { width: '100%', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.5rem', fontFamily: "'DM Sans', sans-serif", background: 'var(--bg)', color: 'var(--text)', marginBottom: '0.5rem' }
     }
 
     return (
@@ -233,10 +253,34 @@ export default function Dashboard() {
                                         ))}
                                     </div>
                                 </div>
-                                <div style={{ fontSize: '0.78rem', color: '#9e9b94' }}>{timeAgo(post.createdAt)}</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: '0.78rem', color: '#9e9b94' }}>{timeAgo(post.createdAt)}</div>
+                                    {/* Action Buttons for own post */}
+                                    {post.author._id === user?._id && (
+                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                                            <button onClick={() => handleEditPost(post)} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '0.75rem' }}>edit</button>
+                                            <button onClick={() => handleDeletePost(post._id)} style={{ background: 'none', border: 'none', color: '#d85b5b', cursor: 'pointer', fontSize: '0.75rem' }}>delete</button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
-                            <div style={{ fontSize: '0.92rem', color: '#5c5a55', lineHeight: 1.65, fontWeight: 300, marginBottom: '1rem' }}>{post.content}</div>
+                            {/* Post Content with Edit Mode Toggle */}
+                            {editingPost === post._id ? (
+                                <div>
+                                    <textarea
+                                        style={s.editTextarea}
+                                        value={editContent}
+                                        onChange={(e) => setEditContent(e.target.value)}
+                                    />
+                                    <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+                                        <button style={s.btnPrimary} onClick={() => handleSaveEdit(post._id)}>Save</button>
+                                        <button style={s.btn} onClick={() => setEditingPost(null)}>Cancel</button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div style={{ fontSize: '0.92rem', color: '#5c5a55', lineHeight: 1.65, fontWeight: 300, marginBottom: '1rem' }}>{post.content}</div>
+                            )}
 
                             <div style={{ display: 'flex', gap: '1.5rem' }}>
                                 <button onClick={() => handleLike(post._id)} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem', color: '#9e9b94', background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'DM Sans', sans-serif" }}>
@@ -256,7 +300,7 @@ export default function Dashboard() {
                                     ))}
                                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.75rem' }}>
                                         <input value={commentTexts[post._id] || ''} onChange={e => setCommentTexts(prev => ({ ...prev, [post._id]: e.target.value }))}
-                                            placeholder="Add a comment..." style={{ flex: 1, border: '1px solid #e8e6e1', borderRadius: '99px', padding: '0.4rem 0.9rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.85rem', outline: 'none' }} />
+                                            placeholder="Add a comment..." style={{ flex: 1, border: '1px solid #e8e6e1', borderRadius: '99px', padding: '0.4rem 0.9rem', fontFamily: "'DM Sans', sans-serif", fontSize: '0.85rem', outline: 'none', background: 'var(--bg)', color: 'var(--text)' }} />
                                         <button onClick={() => handleComment(post._id)} style={{ background: '#2a7c5a', color: '#fff', border: 'none', borderRadius: '99px', padding: '0.4rem 0.9rem', fontSize: '0.82rem', fontFamily: "'DM Sans', sans-serif", cursor: 'pointer' }}>Send</button>
                                     </div>
                                 </div>

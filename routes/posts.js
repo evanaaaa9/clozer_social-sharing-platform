@@ -84,4 +84,17 @@ router.delete('/:id', requireAuth, async (req, res) => {
   }
 });
 
+router.put('/:id', requireAuth, async (req, res) => {
+  try {
+    const { content } = req.body;
+    const post = await Post.findOne({ _id: req.params.id, author: req.session.user._id });
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    post.content = content;
+    await post.save();
+    res.json({ success: true, post });
+  } catch (err) {
+    res.status(500).json({ error: 'Could not update post' });
+  }
+});
+
 module.exports = router;
