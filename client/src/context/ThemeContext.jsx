@@ -10,7 +10,11 @@ export function ThemeProvider({ children }) {
         localStorage.setItem('theme', dark ? 'dark' : 'light')
     }, [dark])
 
-    return <ThemeContext.Provider value={{ dark, toggleTheme: () => setDark(!dark) }}>{children}</ThemeContext.Provider>
+    return (
+        <ThemeContext.Provider value={{ dark, toggleTheme: () => setDark(!dark) }}>
+            {children}
+        </ThemeContext.Provider>
+    )
 }
 
 export const useTheme = () => useContext(ThemeContext)

@@ -5,6 +5,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Profile from './pages/Profile'
+import { ThemeProvider } from './context/ThemeContext'
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth()
